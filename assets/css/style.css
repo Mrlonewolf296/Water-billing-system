@@ -1,0 +1,69 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: url('../images/water_splash.jpg') no-repeat top center fixed;
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.login-container {
+  background-color: rgba(255, 255, 255, 0.65);
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.login-container h2 {
+  color: #0077cc;
+  margin-bottom: 20px;
+}
+
+.login-container input,
+.login-container select {
+  width: 90%;
+  padding: 12px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.login-container button {
+  background-color: #0077cc;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+  font-weight: bold;
+}
+
+.login-container button:hover {
+  background-color: #005fa3;
+}
+.p{
+    color:red;
+
+}
+/* For very large screens, use contain to avoid excessive cropping */
+@media (min-width: 1400px), (min-height: 1000px) {
+  body {
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: top center;
+  }
+}
+
+/* For small screens, remove background-attachment: fixed for better performance */
+@media (max-width: 815px), (max-height: 815px) {
+  body {
+    background-attachment: scroll;
+  }
+}
