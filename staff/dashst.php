@@ -31,6 +31,7 @@ $staff = $stmt->fetch(PDO::FETCH_ASSOC);
       <ul>
         <li><a href="dashst.php">Dashboard</a></li>
         <li><a href="customers.php">Customers</a></li>
+        <li><a href="billing.php">Billing Management</a></li>
         <li><a href="readings.php">Readings</a></li>
         <li><a href="invoices.php">Invoices</a></li>
         <li><a href="payments.php">Payments</a></li>
@@ -40,7 +41,7 @@ $staff = $stmt->fetch(PDO::FETCH_ASSOC);
         <li><a href="payment_reports.php">Payment Reports</a></li>
         <li><a href="balances_reports.php">Balances Reports</a></li>
         <li><a href="tarriffs.php">Add Tarriffs</a></li>
-        <li><a href="../logout.php">Logout</a></li>
+        <li><a href="../auths/logout.php">Logout</a></li>
       </ul>
     </nav>
   </header>

@@ -1,4 +1,8 @@
 <?php
+// Ensure error reporting is enabled for debugging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('log_errors', 1);
 require_once '../config/db_con.php';
 
 $payment_id = $_GET['payment_id'] ?? null;
@@ -7,8 +11,10 @@ if (!$payment_id) {
   die("Payment ID required.");
 }
 
-$stmt = $pdo->prepare("SELECT p.*, c.name, c.meter_number FROM payments p
+$stmt = $pdo->prepare("SELECT p.*, c.name, c.meter_number, i.invoice_no 
+                       FROM payments p
                        JOIN customers c ON p.customer_id = c.customer_id
+                       LEFT JOIN invoices i ON p.invoice_id = i.invoice_id
                        WHERE p.payment_id = ?");
 $stmt->execute([$payment_id]);
 $payment = $stmt->fetch();
@@ -63,8 +69,11 @@ $total = ($payment['cash'] ?? 0) + ($payment['mpesa'] ?? 0) + ($payment['bank'] 
   <div>Date: <span class="right"><?= date('d M Y', strtotime($payment['payment_date'])) ?></span></div>
   <div>Customer: <span class="right"><?= htmlspecialchars($payment['name']) ?></span></div>
   <div>Meter No: <span class="right"><?= htmlspecialchars($payment['meter_number']) ?></span></div>
-  <?php if ($payment['invoice_id']): ?>
-    <div>Invoice: <span class="right">#<?= $payment['invoice_id'] ?></span></div>
+  <?php if (!empty($payment['invoice_no'])): ?>
+    <div>Invoice: <span class="right">#<?= htmlspecialchars($payment['invoice_no']) ?></span></div>
+  <?php endif; ?>
+  <?php if (!empty($payment['reference'])): ?>
+    <div>Reference: <span class="right"><?= htmlspecialchars($payment['reference']) ?></span></div>
   <?php endif; ?>
   <div class="line"></div>
   <?php if ($payment['cash']): ?>
@@ -89,7 +98,6 @@ $total = ($payment['cash'] ?? 0) + ($payment['mpesa'] ?? 0) + ($payment['bank'] 
   window.onload = () => {
     window.print();
   };
-</script>
-
+  </script>
 </body>
 </html>

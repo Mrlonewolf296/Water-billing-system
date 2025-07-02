@@ -103,7 +103,6 @@ $payments = $stmt->fetchAll();
       <th>Customer</th>
       <th>Meter No.</th>
       <th>Amount</th>
-      <th>Payment Method</th>
       <th>Payment Date</th>
       <th>Reference</th>
     </tr>
@@ -114,8 +113,14 @@ $payments = $stmt->fetchAll();
         <td><?= $index + 1 ?></td>
         <td><?= htmlspecialchars($payment['name']) ?></td>
         <td><?= htmlspecialchars($payment['meter_number']) ?></td>
-        <td>KES <?= number_format($payment['amount'], 2) ?></td>
-        <td><?= htmlspecialchars($payment['method']) ?></td>
+        <td>
+          KES <?= number_format(
+            ($payment['cash'] ?? 0) + 
+            ($payment['bank'] ?? 0) + 
+            ($payment['mpesa'] ?? 0), 
+            2
+          ) ?>
+        </td>
         <td><?= date('d M Y', strtotime($payment['created_at'])) ?></td>
         <td><?= htmlspecialchars($payment['reference']) ?></td>
       </tr>

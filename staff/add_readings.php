@@ -148,7 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php endforeach; ?>
   </select>
   <label>Previous Reading</label>
-  <input type="number" name="prev_reading" required>
+  <input type="number" name="prev_reading" id="prev_reading" value="0" required readonly>
   <label>Current Reading</label>
   <input type="number" name="curr_reading" required>
   <label>Reading Month</label>
@@ -174,5 +174,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <input type="date" name="created_at" value="<?= date('Y-m-d') ?>">
   <button type="submit">Submit Reading</button>
 </form>
+<script>
+document.querySelector('select[name="customer_id"]').addEventListener('change', function() {
+    var customerId = this.value;
+    var prevInput = document.getElementById('prev_reading');
+    prevInput.value = 'Loading...';
+    if (customerId) {
+        fetch('get_prev_reading.php?customer_id=' + encodeURIComponent(customerId))
+            .then(response => response.text())
+            .then(val => {
+                prevInput.value = isNaN(val) ? 0 : Number(val);
+            })
+            .catch(() => { prevInput.value = 0; });
+    } else {
+        prevInput.value = 0;
+    }
+});
+</script>
 </body>
 </html>

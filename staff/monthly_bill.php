@@ -83,6 +83,18 @@ foreach ($invoices as $inv) {
       border-radius: 4px;
       cursor: pointer;
     }
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+      .btn-print {
+        display: none;
+      }
+      .back-link {
+        display: none;
+      }
+    }
   </style>
 </head>
 <body>

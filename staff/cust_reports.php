@@ -2,7 +2,7 @@
 session_start();
 require_once '../config/db_con.php';
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'staff') {
-  header("Location: ../index.php");
+  header("Location: ../auths/login.php");
   exit();
 }
 

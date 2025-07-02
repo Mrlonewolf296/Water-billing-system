@@ -11,17 +11,23 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'staff') {
 }
 
 // Fetch all customers with their balances
-$query = "SELECT c.customer_id, c.name, c.phone,
+$search = $_GET['search'] ?? '';
+$searchQuery = "%$search%";
+$query = "SELECT c.customer_id, c.name, c.meter_number, c.phone,
   COALESCE(SUM(i.amt), 0) AS total_billed,
   COALESCE((SELECT SUM(p.cash + p.mpesa + p.bank) FROM payments p WHERE p.customer_id = c.customer_id), 0) AS total_paid
   FROM customers c
   LEFT JOIN invoices i ON c.customer_id = i.customer_id
-  GROUP BY c.customer_id, c.name, c.phone
+  WHERE c.name LIKE :name OR c.meter_number LIKE :meter_number
+  GROUP BY c.customer_id, c.name, c.meter_number, c.phone
   ORDER BY c.name";
 
 $stmt = $pdo->prepare($query);
-$stmt->execute();
-$rows = $stmt->fetchAll();
+$stmt->execute([
+  'name' => "%$search%",
+  'meter_number' => "%$search%"
+]);
+$customers = $stmt->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -36,19 +42,37 @@ $rows = $stmt->fetchAll();
     th, td { padding: 10px; border: 1px solid #ccc; text-align: left; }
     th { background: #0077cc; color: white; }
     .btn-print { margin-top: 10px; background: #28a745; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; }
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+      .search-bar{
+        display: none;
+      }
+      .btn-print {
+        display: none;
+      }
+      .back-link {
+        display: none;
+      }
+    }
   </style>
 </head>
 <body>
-        <a class="back-link" href="dashst.php">← Back to Dashboard</a>
-
+  <a class="back-link" href="dashst.php">← Back to Dashboard</a>
   <h2>Customer Balances Report</h2>
-
+  <form class="search-bar" method="GET">
+    <input type="text" name="search" value="<?= htmlspecialchars($search) ?>" placeholder="Search by name or meter number">
+    <button type="submit">Search</button>
+  </form>
   <button type="button" class="btn-print" onclick="window.print()">🖨️ Print Report</button>
 
   <table>
     <thead>
       <tr>
         <th>Customer</th>
+        <th>Meter Number</th>
         <th>Phone</th>
         <th>Total Billed (KES)</th>
         <th>Total Paid (KES)</th>
@@ -56,18 +80,19 @@ $rows = $stmt->fetchAll();
       </tr>
     </thead>
     <tbody>
-      <?php foreach ($rows as $row): 
+      <?php foreach ($customers as $row): 
         $balance = $row['total_billed'] - $row['total_paid']; ?>
         <tr>
           <td><?= htmlspecialchars($row['name']) ?></td>
+          <td><?= htmlspecialchars($row['meter_number']) ?></td>
           <td><?= htmlspecialchars($row['phone']) ?></td>
           <td><?= number_format($row['total_billed'], 2) ?></td>
           <td><?= number_format($row['total_paid'], 2) ?></td>
           <td><?= number_format($balance, 2) ?></td>
         </tr>
       <?php endforeach; ?>
-      <?php if (count($rows) === 0): ?>
-        <tr><td colspan="5">No data found.</td></tr>
+      <?php if (count($customers) === 0): ?>
+        <tr><td colspan="6">No data found.</td></tr>
       <?php endif; ?>
     </tbody>
   </table>
